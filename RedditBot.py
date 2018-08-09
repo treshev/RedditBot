@@ -1,4 +1,5 @@
 import datetime
+import json
 import logging
 import os
 import time
@@ -127,13 +128,17 @@ def get_gif_url_from_item_url(url: str):
     elif "gfycat.com" in url:
         src_name = url.split("gfycat.com/")[-1]
         response = requests.get("http://gfycat.com/cajax/get/{}".format(src_name))
-        # print(response.json())
         # Telegram does not show big GIFs, so try to get small version if presents
-        gif_url = response.json()["gfyItem"].get('max5mbGif', response.json()["gfyItem"]["gifUrl"])
+        try:
+            gif_url = response.json()["gfyItem"].get('max5mbGif', response.json()["gfyItem"]["gifUrl"])
+        except json.decoder.JSONDecodeError:
+            return None
         return gif_url
     elif "imgur.com" in url and url.split("/")[-1].count('.') == 0:
-        if requests.get(url+".mp4").status_code == 200:
+        if requests.get(url + ".mp4").status_code == 200:
             return url + ".mp4"
+        else:
+            return None
 
 
 @bot.message_handler(func=lambda message: connection.get_state(message.chat.id) == SUBREDDIT_CHOSEN)
