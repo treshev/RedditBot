@@ -6,6 +6,10 @@ from reddit import RedditAPI
 if __name__ == '__main__':
     # time.sleep(5)
     redditAPI = RedditAPI()
-    redditAPI.load_posts_from_subreddit()
+    list = redditAPI.get_last_posts_from_subreddit("gif")
+
+    for item in list:
+        print(item)
+
 
 

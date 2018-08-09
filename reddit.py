@@ -2,7 +2,6 @@ import datetime
 import json
 
 import requests
-
 import settings
 
 
@@ -40,10 +39,11 @@ class RedditAPI:
     def get_last_posts_from_subreddit(self, subbredit_name):
         responce = self.load_last_posts_from_reddit_by_subbredit_name(subbredit_name)
         post_list = self.parse_reddit_responce_to_posts_list(responce)
+        return post_list
 
     def load_last_posts_from_reddit_by_subbredit_name(self, subreddit_name):
         headers = {'User-agent': 'your bot 0.1'}
-        req = requests.get("https://www.reddit.com/r/{}/new.json?sort=new".format(subreddit_name), headers=headers)
+        req = requests.get("https://www.reddit.com/r/{}/new.json?sort=new&limit=200".format(subreddit_name), headers=headers)
         return req
 
     def parse_reddit_responce_to_posts_list(self, req):
@@ -56,7 +56,6 @@ class RedditAPI:
                                 "created": content["data"]["created"]})
         result_list.sort(key=lambda item: item["created"])
         return result_list
-
 
     def load_from_file(self):
         with open("test.txt", "r") as f:
@@ -75,8 +74,7 @@ class RedditAPI:
         }
 
         response = requests.post("https://oauth.reddit.com/api/search_subreddits", headers=headers, params=params)
-        return(response.json()["subreddits"])
-
+        return (response.json()["subreddits"])
 
     def get_my_info(self, access_token):
         headers = {"Authorization": "bearer {}".format(access_token),
