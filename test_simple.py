@@ -25,7 +25,10 @@ def get_gif_url_from_item_url(url: str):
         src_name = url.split("gfycat.com/")[-1]
         response = requests.get("http://gfycat.com/cajax/get/{}".format(src_name))
         # print(response.json())
-        gif_url = response.json()["gfyItem"].get('max5mbGif', response.json()["gfyItem"]["gifUrl"])
+        gif_json = response.json().get("gfyItem")
+        gif_url = None
+        if gif_json:
+            gif_url = gif_json.get('max5mbGif', response.json()["gfyItem"]["gifUrl"])
         return gif_url
     elif "imgur.com" in url and url.split("/")[-1].count('.') == 0:
         return url + ".mp4"
